@@ -3,26 +3,27 @@ let imgBox = document.getElementById("imgBox");
 let qrImg = document.getElementById("qrImg");
 let textField = document.getElementById("textField");
 let generateBtn = document.getElementById("generateBtn");
-generateBtn.addEventListener("click", generateQR());
+generateBtn.addEventListener("click", generateQR);
 
-// async function getData() {
-//     const url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=Example";
-//     const url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + textField.value;
-//     try {
-//       const response = await fetch(url);
-//       if (!response.ok) {
-//         throw new Error(`Response status: ${response.status}`);
-//       }
-  
-//       const json = await response.json();
-//       console.log(json);
-//     } 
-//     catch (error) {
-//       console.error(error.message);
-//     }
-//   }
-  
+function generateQR(){
+    const apiUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=';
+    const api = apiUrl + textField.value;
+    console.log(api);
 
-async function generateQR(){
-    qrImg.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + textField.value;
+fetch(api).then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok ' + response.statusText);
+    }
+    return response.blob(); // Get the image data as a Blob
+  }).then(imageBlob => {
+    // Create a local URL for the image Blob
+    const imageUrl = URL.createObjectURL(imageBlob);
+
+    qrImg.src = imageUrl;
+    qrImg.alt = 'QR Code';
+    textField.value = "";
+  })
+  .catch(error => {
+    console.error('There was a problem with the fetch operation:', error);
+  });
 }
